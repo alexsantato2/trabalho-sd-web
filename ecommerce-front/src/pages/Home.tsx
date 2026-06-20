@@ -9,41 +9,40 @@ import ProductFilterBar from '../components/ProductFilterBar';
 import { Carousel, CarouselSkeleton } from '../components/Carousel';
 
 export default function Home() {
-  // Estados para a busca tradicional paginada
   const [data, setData] = useState<PageResponse<Product> | null>(null);
-  // Estado para armazenar as vitrines/carrosséis da Home dinâmicos
   const [carousels, setCarousels] = useState<CarouselType[]>([]);
-  
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Define se o usuário está executando uma busca ativa por filtros
   const isFiltering = search.trim() !== '' || category !== '';
 
   function load(name: string, cat: string) {
     setLoading(true);
     setError(false);
 
-    // Se houver qualquer filtro ativo, carrega a API tradicional de produtos filtrados
     if (name.trim() !== '' || cat !== '') {
       productService
         .getProducts({ name: name || undefined, category: cat || undefined }, 0, 24)
         .then((res) => {
           setData(res);
-          setCarousels([]); // Limpa os carrosséis durante a busca
+          setAllProducts([]);
+          setCarousels([]);
         })
         .catch(() => setError(true))
         .finally(() => setLoading(false));
     } else {
-      // Se a Home estiver limpa, carrega os carrosséis ordenados por GAP vindos do banco
-      carouselService
-        .getCarousels()
-        .then((res) => {
-          setCarousels(res);
-          setData(null); // Limpa o estado da paginação
+      Promise.all([
+        carouselService.getCarousels(),
+        productService.getProducts({}, 0, 24),
+      ])
+        .then(([carouselRes, productRes]) => {
+          setCarousels(carouselRes);
+          setAllProducts(productRes.content);
+          setData(null);
         })
         .catch(() => setError(true))
         .finally(() => setLoading(false));
@@ -136,31 +135,45 @@ export default function Home() {
           )
         ) : (
           /* MODO HOME LIMPO: Renderiza múltiplos carrosséis sequenciais vindos do banco */
-          carousels.length > 0 ? (
-            <div className="space-y-12">
-              {carousels.map((carousel) => (
-                <div key={carousel.id} className="flex flex-col gap-4">
-                  <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-900 pb-2">
-                    <h2 className="text-lg font-medium text-neutral-800 dark:text-neutral-200 tracking-tight">
-                      {carousel.name}
-                    </h2>
-                  </div>
-                  
-                  {carousel.products && carousel.products.length > 0 ? (
-                    <Carousel>
-                      {carousel.products.map((product) => (
-                        <ProductCard key={product.id} product={product} />
-                      ))}
-                    </Carousel>
-                  ) : (
-                    <p className="text-xs text-neutral-400 italic">Nenhum item adicionado a esta vitrine.</p>
-                  )}
+          <div className="space-y-12">
+            {carousels.length > 0 && carousels.map((carousel) => (
+              <div key={carousel.id} className="flex flex-col gap-4">
+                <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-900 pb-2">
+                  <h2 className="text-lg font-medium text-neutral-800 dark:text-neutral-200 tracking-tight">
+                    {carousel.name}
+                  </h2>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-neutral-500">Nenhum carrossel cadastrado na página inicial.</p>
-          )
+                {carousel.products && carousel.products.length > 0 ? (
+                  <Carousel>
+                    {carousel.products.map((product) => (
+                      <ProductCard key={product.id} product={product} />
+                    ))}
+                  </Carousel>
+                ) : (
+                  <p className="text-xs text-neutral-400 italic">Nenhum item adicionado a esta vitrine.</p>
+                )}
+              </div>
+            ))}
+
+            {allProducts.length > 0 && (
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-900 pb-2">
+                  <h2 className="text-lg font-medium text-neutral-800 dark:text-neutral-200 tracking-tight">
+                    Todos os produtos
+                  </h2>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {allProducts.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {carousels.length === 0 && allProducts.length === 0 && (
+              <p className="text-sm text-neutral-500">Nenhum produto cadastrado.</p>
+            )}
+          </div>
         )}
       </main>
     </div>

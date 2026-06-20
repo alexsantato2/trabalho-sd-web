@@ -12,6 +12,7 @@ import OrderHistoryPage from '../pages/OrderHistoryPage';
 import AdminLayout from '../pages/admin/AdminLayout';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminProductFormPage from '../pages/admin/AdminProductFormPage';
+import AdminProductsPage from '../pages/admin/AdminProductsPage';
 import AdminOrdersPage from '../pages/admin/AdminOrdersPage';
 import AdminCarouselPage from '../pages/admin/AdminCarouselPage';
 import { CarouselAdminProvider } from '../contexts/CarouselAdminContext';
@@ -49,7 +50,7 @@ export const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
               { index: true, element: <AdminDashboard /> },
-              { path: 'products', element: <AdminProductFormPage /> },
+              { path: 'products', element: <AdminProductsPage /> },
               { path: 'products/new', element: <AdminProductFormPage /> },
               { path: 'products/:id/edit', element: <AdminProductFormPage /> },
               { path: 'orders', element: <AdminOrdersPage /> },

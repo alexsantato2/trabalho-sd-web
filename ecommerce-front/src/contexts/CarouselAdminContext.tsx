@@ -36,6 +36,17 @@ interface CarouselAdminContextType {
   clearSaveError: () => void;
 }
 
+function generateId(): string {
+  try {
+    return crypto.randomUUID();
+  } catch {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+    });
+  }
+}
+
 const CarouselAdminContext = createContext<CarouselAdminContextType | undefined>(undefined);
 
 export function CarouselAdminProvider({ children }: { children?: ReactNode }) {
@@ -123,7 +134,7 @@ export function CarouselAdminProvider({ children }: { children?: ReactNode }) {
   }, []);
 
   function addLog(description: string, type: LogEntryType) {
-    setChangeLog(prev => [{ id: crypto.randomUUID(), timestamp: new Date().toLocaleTimeString(), description, type }, ...prev]);
+    setChangeLog(prev => [{ id: generateId(), timestamp: new Date().toLocaleTimeString(), description, type }, ...prev]);
   }
 
   // Função interna auxiliar compartilhada para reordenar posições locais
@@ -183,7 +194,7 @@ export function CarouselAdminProvider({ children }: { children?: ReactNode }) {
   }
 
   function createCarouselLocal() {
-    const newId = `temp-${crypto.randomUUID()}`;
+    const newId = `temp-${generateId()}`;
     const newCarousel = { id: newId, name: "Nova Vitrine", position: carousels.length, products: [] };
     push([...carousels, newCarousel]);
     return newId;
