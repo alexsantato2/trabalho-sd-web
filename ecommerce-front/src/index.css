@@ -1,0 +1,67 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* ==========================================================================
+     ANIMATION & MOTION TOKENS
+     ========================================================================== */
+  --animate-fade-in: fade-in 115ms cubic-bezier(0, 0, 0, 1) forwards;
+  --animate-modal-appear: modal-appear 115ms cubic-bezier(0, 0, 0, 1) forwards;
+
+  /* ==========================================================================
+     BORDER RADIUS TOKENS
+     ========================================================================== */
+  --radius-border-radius-input: 4px;
+  --radius-border-radius-alert: 4px;
+  --radius-border-radius-lg: 8px;  
+  --radius-border-radius-2xl: 16px;
+
+  /* ==========================================================================
+     COLOR TOKENS (CTI Structured)
+     ========================================================================== */
+  
+  /* Layout Page Body */
+  --color-color-background-layout-main: var(--color-white);
+  --color-color-background-layout-main-dark: var(--color-neutral-950);
+
+  /* Typography: Headings, Paragraphs & Labels */
+  --color-color-text-heading-default: var(--color-neutral-900);
+  --color-color-text-heading-default-dark: var(--color-neutral-100);
+  
+  --color-color-text-paragraph-secondary: var(--color-neutral-500);
+  --color-color-text-paragraph-secondary-dark: var(--color-neutral-400);
+  
+  --color-color-text-label-form: var(--color-neutral-500);
+  --color-color-text-label-form-dark: var(--color-neutral-400);
+
+  /* Interactive Links */
+  --color-color-text-link-default: var(--color-neutral-900);
+  --color-color-text-link-default-dark: var(--color-neutral-100);
+
+  /* Form Controls: Inputs */
+  --color-color-background-input-default: var(--color-white);
+  --color-color-background-input-default-dark: var(--color-neutral-800);
+  
+  --color-color-border-input-default: var(--color-neutral-200);
+  --color-color-border-input-default-dark: var(--color-neutral-700);
+  
+  --color-color-text-input-default: var(--color-neutral-900);
+  --color-color-text-input-default-dark: var(--color-neutral-100);
+  
+  --color-color-border-input-focused: var(--color-neutral-400);
+  --color-color-border-input-focused-dark: var(--color-neutral-500);
+
+  /* Interactive Elements: Primary Buttons */
+  --color-color-background-button-primary-default: var(--color-neutral-900);
+  --color-color-background-button-primary-hover: var(--color-neutral-700);
+  --color-color-text-button-primary: var(--color-white);
+
+  /* Feedback Elements: Alerts (Error state) */
+  --color-color-text-alert-error: var(--color-red-600);
+  --color-color-background-alert-error: var(--color-red-50);
+  --color-color-border-alert-error: var(--color-red-100);
+}
+
+/* Global Native Keyframes */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modal-appear { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }

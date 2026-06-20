@@ -1,0 +1,79 @@
+services:
+
+  # ─────────────────────────────────────────
+  # Banco de dados PostgreSQL
+  # ─────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ecommerce_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ecommerce_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - app-network
+
+  # ─────────────────────────────────────────
+  # Backend Spring Boot
+  # ─────────────────────────────────────────
+  backend:
+    build:
+      context: ./ecommerce-back
+    restart: unless-stopped
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/ecommerce_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-3f5a8d2b1e7c4f9a0b6d3e8c2f1a5b9d4e7f0c3a6b9d2e5f8c1a4b7d0e3f6a9}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@store.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      CORS_ALLOWED_ORIGIN: http://localhost:5173
+      REFRESH_TOKEN_EXPIRATION: ${REFRESH_TOKEN_EXPIRATION:-604800000}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/v3/api-docs > /dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+    networks:
+      - app-network
+
+  # ─────────────────────────────────────────
+  # Frontend React (nginx)
+  # ─────────────────────────────────────────
+  frontend:
+    build:
+      context: ./ecommerce-front
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8080/api}
+        VITE_WS_URL: ${VITE_WS_URL:-http://localhost:8080/ws}
+        VITE_VIACEP_BASE_URL: https://viacep.com.br/ws
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
