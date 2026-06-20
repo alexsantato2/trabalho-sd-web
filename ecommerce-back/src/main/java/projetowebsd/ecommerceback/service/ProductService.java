@@ -154,6 +154,19 @@ public class ProductService {
         return ProductResponseDTO.from(productRepository.save(product), reviewRepository);
     }
 
+    public List<ProductResponseDTO> listAll() {
+        return productRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream()
+                .map(p -> ProductResponseDTO.from(p, reviewRepository))
+                .toList();
+    }
+
+    @CacheEvict(value = "products", allEntries = true)
+    @Transactional
+    public void delete(UUID id) {
+        productRepository.delete(getProduct(id));
+    }
+
     public Product getProduct(UUID id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado: " + id));

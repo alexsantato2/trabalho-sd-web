@@ -12,8 +12,8 @@ export default function AdminProductsPage() {
 
   async function load() {
     try {
-      const page = await productService.getProducts({}, 0, 100);
-      setProducts(page.content);
+      const data = await productService.getAllProducts();
+      setProducts(data);
     } finally {
       setLoading(false);
     }
@@ -24,6 +24,12 @@ export default function AdminProductsPage() {
   async function handleDeactivate(id: string) {
     await productService.deactivateProduct(id);
     setProducts((prev) => prev.map((p) => p.id === id ? { ...p, active: false } : p));
+  }
+
+  async function handleDelete(id: string) {
+    if (!confirm('Excluir permanentemente? Esta ação não pode ser desfeita.')) return;
+    await productService.deleteProduct(id);
+    setProducts((prev) => prev.filter((p) => p.id !== id));
   }
 
   async function handleStockDelta(id: string, delta: number) {
@@ -70,7 +76,7 @@ export default function AdminProductsPage() {
           </thead>
           <tbody className="divide-y divide-neutral-50">
             {products.map((p) => (
-              <tr key={p.id} className="hover:bg-neutral-50">
+              <tr key={p.id} className={`hover:bg-neutral-50 ${!p.active ? 'opacity-50' : ''}`}>
                 <td className="py-3 text-neutral-900">{p.name}</td>
                 <td className="py-3 text-neutral-500">{p.category}</td>
                 <td className="py-3 text-neutral-900">{fmt.format(p.price)}</td>
@@ -78,14 +84,16 @@ export default function AdminProductsPage() {
                   <div className="flex items-center justify-center gap-2">
                     <button
                       onClick={() => handleStockDelta(p.id, -1)}
-                      className="w-6 h-6 border border-neutral-200 rounded text-neutral-600 hover:border-neutral-400 text-xs"
+                      disabled={!p.active}
+                      className="w-6 h-6 border border-neutral-200 rounded text-neutral-600 hover:border-neutral-400 text-xs disabled:opacity-30"
                     >
                       −
                     </button>
                     <span className="w-8 text-center">{p.stockQuantity}</span>
                     <button
                       onClick={() => handleStockDelta(p.id, 1)}
-                      className="w-6 h-6 border border-neutral-200 rounded text-neutral-600 hover:border-neutral-400 text-xs"
+                      disabled={!p.active}
+                      className="w-6 h-6 border border-neutral-200 rounded text-neutral-600 hover:border-neutral-400 text-xs disabled:opacity-30"
                     >
                       +
                     </button>
@@ -107,11 +115,17 @@ export default function AdminProductsPage() {
                     {p.active && (
                       <button
                         onClick={() => handleDeactivate(p.id)}
-                        className="text-xs text-neutral-400 hover:text-red-500 transition-colors"
+                        className="text-xs text-neutral-400 hover:text-amber-500 transition-colors"
                       >
                         Inativar
                       </button>
                     )}
+                    <button
+                      onClick={() => handleDelete(p.id)}
+                      className="text-xs text-neutral-400 hover:text-red-500 transition-colors"
+                    >
+                      Excluir
+                    </button>
                   </div>
                 </td>
               </tr>

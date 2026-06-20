@@ -129,6 +129,27 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(request));
     }
 
+    @GetMapping("/all")
+    @Operation(
+        summary = "Listar todos os produtos (incluindo inativos)",
+        description = "Retorna todos os produtos sem filtro de status. Requer ADMIN.",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    public ResponseEntity<List<ProductResponseDTO>> listAll() {
+        return ResponseEntity.ok(productService.listAll());
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(
+        summary = "Excluir produto permanentemente",
+        description = "Remove o produto do banco de dados. Requer ADMIN.",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        productService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/{id}")
     @Operation(
         summary = "Editar produto",

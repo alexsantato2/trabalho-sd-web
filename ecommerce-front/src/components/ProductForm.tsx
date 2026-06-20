@@ -1,6 +1,7 @@
 import { useRef, useState, type FormEvent } from 'react';
 import { productImageUrl } from '../utils/imageUrl';
 import type { Product } from '../types';
+import { CATEGORIES } from '../constants/categories';
 
 export interface ProductFormData {
   name: string;
@@ -114,7 +115,12 @@ export default function ProductForm({ initialData, onSubmit, loading }: Props) {
 
       <div>
         <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1">Categoria</label>
-        <input value={category} onChange={(e) => setCategory(e.target.value)} className={inputClass} />
+        <select value={category} onChange={(e) => setCategory(e.target.value)} required className={inputClass}>
+          <option value="">Selecione uma categoria</option>
+          {CATEGORIES.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
       </div>
 
       <div>

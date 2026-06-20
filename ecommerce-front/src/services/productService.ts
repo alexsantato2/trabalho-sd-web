@@ -33,9 +33,18 @@ export const productService = {
     return res.data;
   },
 
+  async getAllProducts(): Promise<Product[]> {
+    const res = await api.get('/products/all');
+    return res.data;
+  },
+
   async deactivateProduct(id: string): Promise<Product> {
     const res = await api.patch(`/products/${id}/deactivate`);
     return res.data;
+  },
+
+  async deleteProduct(id: string): Promise<void> {
+    await api.delete(`/products/${id}`);
   },
 
   async updateStock(id: string, delta: number): Promise<Product> {

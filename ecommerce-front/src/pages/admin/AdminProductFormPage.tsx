@@ -47,12 +47,16 @@ export default function AdminProductFormPage() {
     }
   }
 
+  if (isEdit && !product) {
+    return <p className="text-sm text-neutral-400">Carregando...</p>;
+  }
+
   return (
     <div className="max-w-lg">
       <h1 className="text-xl font-light text-neutral-900 mb-8">
         {isEdit ? 'Editar produto' : 'Novo produto'}
       </h1>
-      <ProductForm initialData={product} onSubmit={handleSubmit} loading={loading} />
+      <ProductForm key={product?.id ?? 'new'} initialData={product} onSubmit={handleSubmit} loading={loading} />
     </div>
   );
 }

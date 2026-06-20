@@ -67,12 +67,38 @@ export default function AdminOrdersPage() {
                 <p className="text-xs text-neutral-400">
                   {new Date(order.createdAt).toLocaleDateString('pt-BR', { dateStyle: 'medium' })}
                 </p>
+                <p className="text-xs text-neutral-400 mt-0.5">
+                  {order.shippingStreet}, {order.shippingNumber} — {order.shippingCity}/{order.shippingState}
+                </p>
               </div>
               <div className="text-right flex flex-col items-end gap-2">
                 <StatusBadge status={order.status} />
                 <p className="text-sm font-medium text-neutral-900">{fmt.format(order.totalAmount)}</p>
               </div>
             </div>
+
+            {order.items && order.items.length > 0 && (
+              <div className="mt-4 border-t border-neutral-50 pt-3 space-y-2">
+                {order.items.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3">
+                    {item.productImageUrl && (
+                      <img
+                        src={item.productImageUrl}
+                        alt={item.productName}
+                        className="w-8 h-8 object-cover rounded border border-neutral-100 flex-shrink-0"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-neutral-700 truncate">{item.productName}</p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="text-xs text-neutral-400">{item.quantity}× {fmt.format(item.unitPrice)}</p>
+                      <p className="text-xs font-medium text-neutral-700">{fmt.format(item.quantity * item.unitPrice)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {order.status === 'PENDING' && (
               <div className="mt-4 flex gap-3">

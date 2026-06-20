@@ -5,7 +5,7 @@ interface ProductFilterBarProps {
   onCategoryChange: (value: string) => void;
 }
 
-const CATEGORIES = ['Decoração', 'Acessórios', 'Móveis', 'Iluminação', 'Áudio'];
+import { CATEGORIES } from '../constants/categories';
 
 export default function ProductFilterBar({
   search,
