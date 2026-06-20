@@ -35,6 +35,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ReviewRepository reviewRepository;
     private final projetowebsd.ecommerceback.repository.OrderItemRepository orderItemRepository;
+    private final projetowebsd.ecommerceback.repository.CarouselProductRepository carouselProductRepository;
 
     // Atualize a assinatura para aceitar as strings de ordenação
     @Cacheable(value = "products", key = "#filter.toString() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #sortProperty + '-' + #sortDirection")
@@ -176,6 +177,8 @@ public class ProductService {
         if (orderItemRepository.existsByProductId(id)) {
             throw new BusinessException("Este produto está vinculado a pedidos existentes. Exclua os pedidos antes de remover o produto.");
         }
+        carouselProductRepository.deleteByProductId(id);
+        reviewRepository.deleteByProductId(id);
         productRepository.delete(getProduct(id));
     }
 

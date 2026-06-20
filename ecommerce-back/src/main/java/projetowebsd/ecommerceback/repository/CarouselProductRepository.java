@@ -12,4 +12,5 @@ public interface CarouselProductRepository extends JpaRepository<CarouselProduct
     List<CarouselProduct> findAllByCarouselIdOrderByPositionAsc(UUID carouselId);
     long countByCarouselId(UUID carouselId);
     void deleteByCarouselId(UUID carouselId);
+    void deleteByProductId(UUID productId);
 }
