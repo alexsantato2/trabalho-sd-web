@@ -149,6 +149,7 @@ public class CarouselService {
         Carousel carousel = carouselRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Carrossel não encontrado"));
 
+        carouselProductRepository.deleteByCarouselId(id);
         carouselRepository.delete(carousel);
     }
 
