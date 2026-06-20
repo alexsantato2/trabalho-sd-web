@@ -8,8 +8,6 @@ import type { PageResponse, Product, Carousel as CarouselType } from '../types';
 import ProductFilterBar from '../components/ProductFilterBar';
 import { Carousel, CarouselSkeleton } from '../components/Carousel';
 
-const CATEGORIES = ['Decoração', 'Acessórios', 'Móveis', 'Iluminação', 'Áudio'];
-
 export default function Home() {
   // Estados para a busca tradicional paginada
   const [data, setData] = useState<PageResponse<Product> | null>(null);
@@ -65,8 +63,6 @@ export default function Home() {
   function handleCategoryChange(value: string) {
     setCategory(value);
   }
-
-  const inputClass = 'border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 rounded px-3 py-2 text-sm focus:outline-none focus:border-neutral-400 dark:focus:border-neutral-500 placeholder-neutral-400';
 
   return (
     <div className="bg-white dark:bg-neutral-950 min-h-screen">

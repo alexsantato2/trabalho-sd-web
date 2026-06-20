@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -10,8 +10,6 @@ export default function Navbar() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { count } = useCart();
   const { isDark, toggleDark } = useTheme();
-  const navigate = useNavigate();
-  
   const [pendingCount, setPendingCount] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
@@ -82,6 +80,7 @@ export default function Navbar() {
       id: "user-profile",
       type: "menu-dropdown",
       text: user?.name || "Cliente",
+      description: user?.name || '',
       icon: "👤",
       disableUtilityCollapse: false,
       items: [
@@ -177,7 +176,7 @@ export default function Navbar() {
                         {/* Header do Perfil igualzinho ao da AWS */}
                         <div className="px-4 py-3 border-b border-neutral-100 dark:border-neutral-800">
                           <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">{utility.text}</p>
-                          <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate">{utility.description}</p>
+                          <p className="text-xs text-neutral-400 dark:text-neutral-500 truncate">{(utility as any).description}</p>
                         </div>
                         <div className="py-1">
                           {utility.items?.map((item) => {

@@ -1,5 +1,5 @@
 import api from './api';
-import type { Carousel, CarouselRequest, MoveRequest } from '../types';
+import type { Carousel, CarouselRequest } from '../types';
 
 export const carouselService = {
   // GET /api/carousels - Listar carrosséis com produtos ordenados

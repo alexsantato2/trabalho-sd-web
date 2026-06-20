@@ -28,7 +28,6 @@ export default function CarouselManualProducts({
   onStrategyChange,
   dynamicFilter = 'best-sellers',
   onDynamicFilterChange,
-  onDynamicProductsFetch
 }: ManualProductsProps) {
   const [activeTab, setActiveTab] = useState<'current' | 'search'>('current');
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,23 +51,6 @@ export default function CarouselManualProducts({
         .finally(() => setSearching(false));
     }
   }, [activeTab, selectedCategory, isDynamicMode]);
-
-  // Função disparada manualmente ao clicar no botão de pesquisar da barra
-  async function handleSearch() {
-    setSearching(true);
-    try {
-      const filters: any = {};
-      if (searchQuery) filters.name = searchQuery;
-      if (selectedCategory) filters.category = selectedCategory;
-
-      const response = await productService.getProducts(filters, 0, 1000);
-      setSearchResults(response.content || []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSearching(false);
-    }
-  }
 
   return (
     <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 shadow-xs flex flex-col min-h-[500px]">
@@ -173,20 +155,18 @@ export default function CarouselManualProducts({
         <div className="w-full flex-1">
           {isDynamicMode ? (
             <div className="w-full">
-              <CarouselDynamicRules 
-                dynamicFilter={dynamicFilter} 
-                onDynamicFilterChange={onDynamicFilterChange!} 
-                onFetchPreview={onDynamicProductsFetch}
+              <CarouselDynamicRules
+                dynamicFilter={dynamicFilter}
+                onDynamicFilterChange={onDynamicFilterChange!}
               />
             </div>
           ) : (
             <div className="w-full flex flex-col gap-3">
               <ProductFilterBar
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                onSearch={handleSearch}
+                search={searchQuery}
+                category={selectedCategory}
+                onSearchChange={setSearchQuery}
+                onCategoryChange={setSelectedCategory}
               />
 
               <div className="border border-neutral-100 dark:border-neutral-800 rounded-xl overflow-y-auto max-h-[290px] p-2 bg-neutral-50/50 dark:bg-neutral-950/30">

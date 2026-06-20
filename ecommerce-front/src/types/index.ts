@@ -28,6 +28,8 @@ export interface ProductFilters {
   category?: string;
   minPrice?: number;
   maxPrice?: number;
+  sort?: string;
+  specialOffers?: boolean;
 }
 
 export interface PageResponse<T> {

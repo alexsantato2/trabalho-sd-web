@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useRef } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode, useRef } from 'react';
 import { Outlet } from 'react-router-dom';
 import { carouselService } from '../services/carouselService';
 import { storageManager, STORAGE_KEYS } from '../services/storageManager';
@@ -38,9 +38,9 @@ interface CarouselAdminContextType {
 
 const CarouselAdminContext = createContext<CarouselAdminContextType | undefined>(undefined);
 
-export function CarouselAdminProvider({ children }: { children: ReactNode }) {
-  const historyHook = useCarouselHistory();
-  const { carousels, history, historyPointer, savedHistoryIndex, push, undo, redo, 
+export function CarouselAdminProvider({ children }: { children?: ReactNode }) {
+  const historyHook = useCarouselHistory<CarouselType>();
+  const { carousels, history, historyPointer, savedHistoryIndex, push,
           setHistory, setHistoryPointer, setSavedHistoryIndex } = historyHook;
   
   const [changeLog, setChangeLog] = useState<LogEntry[]>([]);

@@ -11,7 +11,6 @@ import CheckoutPage from '../pages/CheckoutPage';
 import OrderHistoryPage from '../pages/OrderHistoryPage';
 import AdminLayout from '../pages/admin/AdminLayout';
 import AdminDashboard from '../pages/admin/AdminDashboard';
-import AdminProductsPage from '../pages/admin/AdminProductsPage';
 import AdminProductFormPage from '../pages/admin/AdminProductFormPage';
 import AdminOrdersPage from '../pages/admin/AdminOrdersPage';
 import AdminCarouselPage from '../pages/admin/AdminCarouselPage';
