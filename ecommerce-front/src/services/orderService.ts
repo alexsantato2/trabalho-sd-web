@@ -40,4 +40,8 @@ export const orderService = {
     const res = await api.get('/orders/pending-count');
     return res.data;
   },
+
+  async forceDeleteOrder(id: string): Promise<void> {
+    await api.delete(`/orders/${id}`);
+  },
 };

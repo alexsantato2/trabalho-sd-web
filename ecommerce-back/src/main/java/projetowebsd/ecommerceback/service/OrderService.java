@@ -132,6 +132,20 @@ public class OrderService {
         return orderRepository.countByStatus(OrderStatus.PENDING);
     }
 
+    @Transactional
+    public void forceDelete(UUID id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado: " + id));
+        if (order.getStatus() == OrderStatus.PENDING) {
+            for (OrderItem item : order.getItems()) {
+                Product product = item.getProduct();
+                product.setStockQuantity(product.getStockQuantity() + item.getQuantity());
+                notificationService.notifyStockChange(product);
+            }
+        }
+        orderRepository.delete(order);
+    }
+
     private Order getPendingOrder(UUID id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado: " + id));

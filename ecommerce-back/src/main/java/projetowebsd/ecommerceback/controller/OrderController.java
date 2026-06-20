@@ -162,6 +162,24 @@ public class OrderController {
         return ResponseEntity.ok(orderService.approve(id));
     }
 
+    @DeleteMapping("/{id}")
+    @Operation(
+        summary = "Excluir pedido à força (admin)",
+        description = "Remove permanentemente um pedido independente do status. Se PENDING, o estoque dos itens é restaurado. Requer ADMIN.",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Pedido excluído"),
+        @ApiResponse(responseCode = "404", description = "Pedido não encontrado",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(example = "{\"error\": \"Pedido não encontrado\"}")))
+    })
+    public ResponseEntity<Void> forceDelete(
+            @Parameter(description = "UUID do pedido", required = true) @PathVariable UUID id) {
+        orderService.forceDelete(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/{id}/reject")
     @Operation(
         summary = "Rejeitar pedido pendente",

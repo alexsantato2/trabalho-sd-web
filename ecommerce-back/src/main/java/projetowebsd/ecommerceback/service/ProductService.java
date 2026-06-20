@@ -34,6 +34,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ReviewRepository reviewRepository;
+    private final projetowebsd.ecommerceback.repository.OrderItemRepository orderItemRepository;
 
     // Atualize a assinatura para aceitar as strings de ordenação
     @Cacheable(value = "products", key = "#filter.toString() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #sortProperty + '-' + #sortDirection")
@@ -164,6 +165,9 @@ public class ProductService {
     @CacheEvict(value = "products", allEntries = true)
     @Transactional
     public void delete(UUID id) {
+        if (orderItemRepository.existsByProductId(id)) {
+            throw new BusinessException("Este produto está vinculado a pedidos existentes. Exclua os pedidos antes de remover o produto.");
+        }
         productRepository.delete(getProduct(id));
     }
 

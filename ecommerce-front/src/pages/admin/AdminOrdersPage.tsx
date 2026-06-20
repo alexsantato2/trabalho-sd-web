@@ -3,6 +3,7 @@ import { orderService } from '../../services/orderService';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import StatusBadge from '../../components/StatusBadge';
 import NotificationToast from '../../components/NotificationToast';
+import ConfirmationModal from '../../components/ConfirmationModal';
 import type { Order, OrderStatus } from '../../types';
 
 const fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -11,6 +12,7 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<OrderStatus | ''>('');
+  const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
   const { lastOrderNotification } = useWebSocket({ isAdmin: true });
 
   async function load() {
@@ -34,6 +36,13 @@ export default function AdminOrdersPage() {
   async function handleReject(id: string) {
     await orderService.rejectOrder(id);
     setOrders((prev) => prev.map((o) => o.id === id ? { ...o, status: 'REJECTED' } : o));
+  }
+
+  async function handleForceDelete() {
+    if (!orderToDelete) return;
+    await orderService.forceDeleteOrder(orderToDelete.id);
+    setOrders((prev) => prev.filter((o) => o.id !== orderToDelete.id));
+    setOrderToDelete(null);
   }
 
   if (loading) {
@@ -100,22 +109,30 @@ export default function AdminOrdersPage() {
               </div>
             )}
 
-            {order.status === 'PENDING' && (
-              <div className="mt-4 flex gap-3">
-                <button
-                  onClick={() => handleApprove(order.id)}
-                  className="px-4 py-1.5 bg-neutral-900 text-white text-xs uppercase tracking-wider font-medium hover:bg-neutral-700 transition-colors rounded"
-                >
-                  Aprovar
-                </button>
-                <button
-                  onClick={() => handleReject(order.id)}
-                  className="px-4 py-1.5 border border-neutral-200 text-neutral-600 text-xs uppercase tracking-wider font-medium hover:border-red-400 hover:text-red-500 transition-colors rounded"
-                >
-                  Rejeitar
-                </button>
-              </div>
-            )}
+            <div className="mt-4 flex gap-3">
+              {order.status === 'PENDING' && (
+                <>
+                  <button
+                    onClick={() => handleApprove(order.id)}
+                    className="px-4 py-1.5 bg-neutral-900 text-white text-xs uppercase tracking-wider font-medium hover:bg-neutral-700 transition-colors rounded"
+                  >
+                    Aprovar
+                  </button>
+                  <button
+                    onClick={() => handleReject(order.id)}
+                    className="px-4 py-1.5 border border-neutral-200 text-neutral-600 text-xs uppercase tracking-wider font-medium hover:border-red-400 hover:text-red-500 transition-colors rounded"
+                  >
+                    Rejeitar
+                  </button>
+                </>
+              )}
+              <button
+                onClick={() => setOrderToDelete(order)}
+                className="ml-auto px-4 py-1.5 border border-neutral-200 text-neutral-400 text-xs uppercase tracking-wider font-medium hover:border-red-400 hover:text-red-500 transition-colors rounded"
+              >
+                Excluir
+              </button>
+            </div>
           </div>
         ))}
 
@@ -123,6 +140,15 @@ export default function AdminOrdersPage() {
           <p className="text-sm text-neutral-400">Nenhum pedido encontrado.</p>
         )}
       </div>
+
+      <ConfirmationModal
+        isOpen={!!orderToDelete}
+        onClose={() => setOrderToDelete(null)}
+        onConfirm={handleForceDelete}
+        title="Excluir pedido permanentemente"
+        description={`⚠️ Ação não recomendada. Isso remove o pedido #${orderToDelete?.id.slice(0, 8)} de forma irreversível. Se o pedido estiver pendente, o estoque dos itens será restaurado. Pedidos aprovados ou rejeitados serão apagados sem qualquer restauração adicional. Use isso apenas para desbloquear a exclusão de produtos vinculados.`}
+        confirmText="Excluir mesmo assim"
+      />
     </div>
   );
 }

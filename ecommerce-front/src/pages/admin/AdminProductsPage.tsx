@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { productService } from '../../services/productService';
 import SkeletonRow from '../../components/SkeletonRow';
+import ConfirmationModal from '../../components/ConfirmationModal';
 import type { Product } from '../../types';
 
 const fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -9,6 +10,8 @@ const fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   async function load() {
     try {
@@ -26,10 +29,18 @@ export default function AdminProductsPage() {
     setProducts((prev) => prev.map((p) => p.id === id ? { ...p, active: false } : p));
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm('Excluir permanentemente? Esta ação não pode ser desfeita.')) return;
-    await productService.deleteProduct(id);
-    setProducts((prev) => prev.filter((p) => p.id !== id));
+  async function handleDelete() {
+    if (!productToDelete) return;
+    setDeleteError(null);
+    try {
+      await productService.deleteProduct(productToDelete.id);
+      setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
+      setProductToDelete(null);
+    } catch (err: any) {
+      const msg = err?.response?.data?.error;
+      setDeleteError(msg ?? 'Erro ao excluir produto.');
+      setProductToDelete(null);
+    }
   }
 
   async function handleStockDelta(id: string, delta: number) {
@@ -121,7 +132,7 @@ export default function AdminProductsPage() {
                       </button>
                     )}
                     <button
-                      onClick={() => handleDelete(p.id)}
+                      onClick={() => { setDeleteError(null); setProductToDelete(p); }}
                       className="text-xs text-neutral-400 hover:text-red-500 transition-colors"
                     >
                       Excluir
@@ -133,6 +144,20 @@ export default function AdminProductsPage() {
           </tbody>
         </table>
       </div>
+      {deleteError && (
+        <p className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded px-4 py-3">
+          {deleteError}
+        </p>
+      )}
+
+      <ConfirmationModal
+        isOpen={!!productToDelete}
+        onClose={() => setProductToDelete(null)}
+        onConfirm={handleDelete}
+        title="Excluir produto permanentemente"
+        description={`Tem certeza que deseja excluir "${productToDelete?.name}"? Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+      />
     </div>
   );
 }
