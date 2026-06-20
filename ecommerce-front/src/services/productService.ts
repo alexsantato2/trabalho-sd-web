@@ -38,6 +38,11 @@ export const productService = {
     return res.data;
   },
 
+  async activateProduct(id: string): Promise<Product> {
+    const res = await api.patch(`/products/${id}/activate`);
+    return res.data;
+  },
+
   async deactivateProduct(id: string): Promise<Product> {
     const res = await api.patch(`/products/${id}/deactivate`);
     return res.data;

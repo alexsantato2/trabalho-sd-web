@@ -180,6 +180,17 @@ public class ProductController {
         return ResponseEntity.ok(productService.update(id, request));
     }
 
+    @PatchMapping("/{id}/activate")
+    @Operation(
+        summary = "Ativar produto",
+        description = "Marca o produto como ativo — ele volta a aparecer no catálogo público. Requer ADMIN.",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    public ResponseEntity<ProductResponseDTO> activate(
+            @Parameter(description = "UUID do produto", required = true) @PathVariable UUID id) {
+        return ResponseEntity.ok(productService.activate(id));
+    }
+
     @PatchMapping("/{id}/deactivate")
     @Operation(
         summary = "Inativar produto",

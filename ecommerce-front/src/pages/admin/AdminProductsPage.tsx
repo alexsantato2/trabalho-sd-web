@@ -24,6 +24,11 @@ export default function AdminProductsPage() {
 
   useEffect(() => { load(); }, []);
 
+  async function handleActivate(id: string) {
+    await productService.activateProduct(id);
+    setProducts((prev) => prev.map((p) => p.id === id ? { ...p, active: true } : p));
+  }
+
   async function handleDeactivate(id: string) {
     await productService.deactivateProduct(id);
     setProducts((prev) => prev.map((p) => p.id === id ? { ...p, active: false } : p));
@@ -123,12 +128,19 @@ export default function AdminProductsPage() {
                     >
                       Editar
                     </Link>
-                    {p.active && (
+                    {p.active ? (
                       <button
                         onClick={() => handleDeactivate(p.id)}
                         className="text-xs text-neutral-400 hover:text-amber-500 transition-colors"
                       >
                         Inativar
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleActivate(p.id)}
+                        className="text-xs text-neutral-400 hover:text-green-600 transition-colors"
+                      >
+                        Ativar
                       </button>
                     )}
                     <button

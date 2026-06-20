@@ -145,6 +145,14 @@ public class ProductService {
 
     @CacheEvict(value = "products", allEntries = true)
     @Transactional
+    public ProductResponseDTO activate(UUID id) {
+        Product product = getProduct(id);
+        product.setActive(true);
+        return ProductResponseDTO.from(productRepository.save(product), reviewRepository);
+    }
+
+    @CacheEvict(value = "products", allEntries = true)
+    @Transactional
     public ProductResponseDTO updateStock(UUID id, StockUpdateDTO request) {
         Product product = getProduct(id);
         int newStock = product.getStockQuantity() + request.delta();
