@@ -24,6 +24,7 @@ import projetowebsd.ecommerceback.dto.product.StockUpdateDTO;
 import projetowebsd.ecommerceback.service.ProductService;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
