@@ -34,7 +34,7 @@ export default function Footer() {
               <a href="https://tiktok.com" target="_blank" rel="noreferrer" className="hover:text-neutral-900 transition-colors">TikTok</a>
             </ul>
           </div>
-
+ 
           {/* Coluna 4: Newsletter */}
           <div className="space-y-4">
             <h3 className="text-neutral-900 font-medium uppercase tracking-wider text-xs">Newsletter</h3>
